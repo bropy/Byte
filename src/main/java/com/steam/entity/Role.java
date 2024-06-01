@@ -29,7 +29,5 @@ public class Role {
     @Setter
     @Getter
     @Column(unique = true, nullable = false)
-    @NotBlank
-    @Size(min = 1, max = 50)
     private String name;
 }
