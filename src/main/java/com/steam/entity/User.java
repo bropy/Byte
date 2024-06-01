@@ -22,6 +22,8 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "users")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"password", "friends"})
@@ -30,45 +32,27 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Setter
-    @Getter
     private Long id;
 
-    @Setter
-    @Getter
     @Column(unique = true, nullable = false)
     private String login;
 
-    @Setter
-    @Getter
     @Column(nullable = false)
     private String password;
 
-    @Setter
-    @Getter
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Setter
-    @Getter
     private String firstName;
 
-    @Setter
-    @Getter
     private String lastName;
 
-    @Setter
-    @Getter
     private LocalDate birthDate;
 
-    @Setter
-    @Getter
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @Setter
-    @Getter
     @OneToOne
     @JoinColumn(name = "profile_id")
     private Profile profile;

@@ -14,27 +14,21 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "profiles")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class Profile {
 
-    @Setter
-    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter
-    @Getter
     @Column(nullable = false)
     private String nickname;
 
-    @Setter
-    @Getter
     private String avatar;
 
-    @Setter
-    @Getter
     private String description;
 }
