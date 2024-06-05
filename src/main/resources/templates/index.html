@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Вхід через GitHub</title>
+</head>
+<body>
+<div th:if="${#authorization.expression('!isAuthenticated()')}">
+    <h2>Вхід через GitHub</h2>
+    <a th:href="@{/oauth2/authorization/github}">Увійти через GitHub</a>
+</div>
+
+<div th:if="${#authorization.expression('isAuthenticated()')}">
+    <h2>Привіт, <span th:text="${#authentication.principal.attributes['login']}"></span>!</h2>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Вийти</button>
+    </form>
+</div>
+</body>
+</html>
