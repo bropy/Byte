@@ -11,20 +11,20 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/login/oauth2/code/github").permitAll()
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/registration").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login((oauth2) -> oauth2
-                        .loginPage("/")
-                        .defaultSuccessUrl("/success", true)
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/registration")
+                        .failureUrl("/login?error")
                 )
                 .logout((logout) -> logout
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessUrl("/login")
                 );
-
         return http.build();
     }
 }

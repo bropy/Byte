@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>sign in</title>
+</head>
+<body>
+<form>
+    <h3>Sign in</h3>
+    <label>Email</label>
+    <input type="email" name="" id="">
+    <button type="submit"></button>
+</form>
+<div th:if="${#authorization.expression('!isAuthenticated()')}">
+    <h2>Вхід через GitHub</h2>
+    <a th:href="@{/oauth2/authorization/github}">Увійти через GitHub</a>
+</div>
+<div th:if="${#authorization.expression('!isAuthenticated()')}">
+    <h2>Вхід через Google</h2>
+    <a th:href="@{/oauth2/authorization/google}">Увійти через Google</a>
+</div>
+
+</body>
+</html>
