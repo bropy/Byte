@@ -5,10 +5,6 @@
 </head>
 <body>
 
-<div th:unless="${#authorization.expression('isAuthenticated()')}">
-    <a th:href="@{/oauth2/authorization/google}"><button type="button">Увійти через Google</button></a>
-    <a th:href="@{/oauth2/authorization/github}"><button type="button">Увійти через GitHub</button></a>
-</div>
 
 <div th:if="${#authorization.expression('isAuthenticated()')}">
     <h2>Привіт, <span th:text="${#authentication.principal.attributes['name']}"></span>!</h2>
