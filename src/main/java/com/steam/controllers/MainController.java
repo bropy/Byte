@@ -11,16 +11,9 @@ import java.security.Principal;
 public class MainController {
 
     @GetMapping("/")
-    public String index(Model model, Principal principal) {
-        if (principal != null) {
-            String githubUsername = ((OAuth2AuthenticationToken) principal).getPrincipal().getAttribute("login");
-            model.addAttribute("githubUsername", githubUsername);
-        }
+    public String index() {
         return "index";
     }
 
-    @GetMapping("/success")
-    public String success() {
-        return "redirect:/"; // Перенаправити на головну після успішного входу
-    }
+
 }

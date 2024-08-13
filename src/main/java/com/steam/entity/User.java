@@ -1,17 +1,10 @@
 package com.steam.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,20 +35,25 @@ public class User {
 
     @Column(unique = true, nullable = false)
     private String email;
-
+    @Column(nullable = false)
     private String firstName;
-
+    @Column(nullable = false)
     private String lastName;
-
+    @Column(nullable = false)
     private LocalDate birthDate;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+    @ManyToMany(fetch= FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name="user_roles",
+            joinColumns = {@JoinColumn(name="user_id",referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name="role_id",referencedColumnName = "id")}
+    )
+    private List<Role> roles = new ArrayList<>();
 
-    @OneToOne
-    @JoinColumn(name = "profile_id")
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Profile profile;
+
 
     @ManyToMany
     @JoinTable(
