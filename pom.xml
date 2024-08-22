@@ -15,7 +15,7 @@
 	<name>Byte</name>
 	<description>Byte - soft store</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>22</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -70,18 +70,8 @@
 			<version>8.0.1.Final</version>
 		</dependency>
 		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>jquery</artifactId>
-			<version>3.4.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>bootstrap</artifactId>
-			<version>4.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
