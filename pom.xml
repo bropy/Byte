@@ -15,7 +15,7 @@
 	<name>Byte</name>
 	<description>Byte - soft store</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>22</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
