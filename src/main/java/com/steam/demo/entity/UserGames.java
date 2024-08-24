@@ -1,7 +1,10 @@
-package com.steam.entity;
+package com.steam.demo.entity;
+
+
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 public class UserGames { //бібліотека юзера
 
+    @jakarta.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,4 +39,5 @@ public class UserGames { //бібліотека юзера
     private LocalDateTime lastPlayed;
     @Column(name = "status")//in wish list\bought\gifted\owned
     private String status;
+
 }

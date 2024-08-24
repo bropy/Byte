@@ -1,8 +1,8 @@
-package com.steam.controllers;
+package com.steam.demo.controllers;
 
-import com.steam.dto.UserDto;
-import com.steam.entity.User;
-import com.steam.service.UserService;
+import com.steam.demo.dto.UserDto;
+import com.steam.demo.entity.User;
+import com.steam.demo.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

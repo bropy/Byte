@@ -1,4 +1,4 @@
-package com.steam.entity;
+package com.steam.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

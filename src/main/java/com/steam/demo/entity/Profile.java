@@ -1,4 +1,4 @@
-package com.steam.entity;
+package com.steam.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "profiles")
@@ -25,10 +27,13 @@ public class Profile {
 
     @Column(nullable = true)
     private String avatar;
+
     @Column(nullable = true)
     private String description;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonIgnore
     private User user;
 }
+

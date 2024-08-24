@@ -1,6 +1,6 @@
-package com.steam.repository;
+package com.steam.demo.repository;
 
-import com.steam.entity.Profile;
+import com.steam.demo.entity.Profile;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

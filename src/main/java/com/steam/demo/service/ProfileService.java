@@ -1,7 +1,7 @@
-package com.steam.service;
+package com.steam.demo.service;
 
-import com.steam.entity.Profile;
-import com.steam.repository.ProfileRepository;
+import com.steam.demo.entity.Profile;
+import com.steam.demo.repository.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

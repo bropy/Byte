@@ -1,5 +1,6 @@
-package com.steam.entity;
+package com.steam.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -52,6 +53,7 @@ public class User {
 
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Profile profile;
 
 
