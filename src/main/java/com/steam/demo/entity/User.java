@@ -18,7 +18,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"password", "friends"})
-@Builder
 public class User {
 
     @Id
