@@ -39,6 +39,11 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-crypto</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Lombok (no version needed, managed by parent) -->
 		<dependency>
@@ -88,6 +93,7 @@
 					<artifactId>maven-dependency-plugin</artifactId>
 					<version>3.6.1</version>
 				</plugin>
+
 			</plugins>
 		</pluginManagement>
 		<plugins>
