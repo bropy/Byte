@@ -12,13 +12,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class AuthController {
     private final UserService userService;
 
     public AuthController(UserService userService){
         this.userService = userService;
+    }
+    @GetMapping("/")
+    public String index(){
+        return "index";
     }
 
     @GetMapping("/reg")
