@@ -1,1 +1,1 @@
-heroku ps:scale worker=1 urgentworker=3
+web: mvn package -DskipTests && java -jar target/*.war
