@@ -13,6 +13,10 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 public class ByteApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
+		String port = System.getenv("PORT");
+		if (port != null) {
+			System.setProperty("server.port", port);
+		}
 		SpringApplication.run(ByteApplication.class, args);
 	}
 
