@@ -30,6 +30,11 @@ public class Profile {
 
     @Column(nullable = true)
     private String description;
+    @Column(nullable = true)
+    private String country = "Planet Earth";
+
+    @Column(nullable = true)
+    private String status = "Not set";
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")

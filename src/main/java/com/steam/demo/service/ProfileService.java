@@ -37,6 +37,9 @@ public class ProfileService {
         profile.setNickname(profileDetails.getNickname());
         profile.setAvatar(profileDetails.getAvatar());
         profile.setDescription(profileDetails.getDescription());
+        profile.setCountry(profileDetails.getCountry());
+        profile.setStatus(profileDetails.getStatus());
+
         return profileRepository.save(profile);
     }
 

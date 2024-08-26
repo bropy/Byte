@@ -1,14 +1,17 @@
 package com.steam.demo.controllers;
 
+import com.steam.demo.dto.SafeUserDto;
 import com.steam.demo.dto.UserDto;
 import com.steam.demo.entity.User;
 import com.steam.demo.service.UserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -23,11 +26,27 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> user = userService.getUserById(id);
-        return user.map(ResponseEntity::ok).orElseGet(
-                () -> ResponseEntity.notFound().build()
-        );
+    public ResponseEntity<SafeUserDto> getUserById(@PathVariable Long id) {
+        Optional<User> userOptional = userService.getUserById(id);
+        return userOptional.map(user -> {
+            SafeUserDto safeUserDto = mapToSafeUserDto(user);
+            return ResponseEntity.ok(safeUserDto);
+        }).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    private SafeUserDto mapToSafeUserDto(User user) {
+        SafeUserDto safeUserDto = new SafeUserDto();
+        BeanUtils.copyProperties(user, safeUserDto, "friends");
+        if (user.getFriends() != null) {
+            safeUserDto.setFriends(user.getFriends().stream()
+                    .map(friend -> {
+                        SafeUserDto friendDto = new SafeUserDto();
+                        BeanUtils.copyProperties(friend, friendDto, "friends");
+                        return friendDto;
+                    })
+                    .collect(Collectors.toSet()));
+        }
+        return safeUserDto;
     }
 
     @GetMapping("/search/{login}")
