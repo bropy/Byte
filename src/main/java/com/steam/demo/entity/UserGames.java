@@ -7,6 +7,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_games")
@@ -39,5 +40,14 @@ public class UserGames { //бібліотека юзера
     private LocalDateTime lastPlayed;
     @Column(name = "status")//in wish list\bought\gifted\owned
     private String status;
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_game_achievements",
+            joinColumns = @JoinColumn(name = "user_game_id"),
+            inverseJoinColumns = @JoinColumn(name = "achievement_id")
+    )
+    private Set<Achievement> achievements;
 
 }

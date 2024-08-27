@@ -24,7 +24,8 @@ public class Game {
 
     @Column(nullable = false)
     private String description;
-
+    @Column(nullable = false)
+    private String avatar;
     @Column(nullable = false)
     private String source;
 
