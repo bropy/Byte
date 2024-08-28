@@ -1,9 +1,14 @@
 package com.steam.demo.controllers;
 
 import com.steam.demo.entity.Profile;
+import com.steam.demo.entity.User;
 import com.steam.demo.service.ProfileService;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +32,7 @@ public class ProfileController {
             () -> ResponseEntity.notFound().build()
         );
     }
+
 
     @GetMapping("/search/{nickname}")
     public List<Profile> getProfilesByNickname(@PathVariable String nickname) {
