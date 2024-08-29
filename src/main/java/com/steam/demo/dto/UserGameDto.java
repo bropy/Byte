@@ -15,5 +15,6 @@ public class UserGameDto {
     private float playtimeHours;
     private LocalDateTime lastPlayed;
     private String status;
+    public String avatar;
     private Set<AchievementDto> achievements;
 }

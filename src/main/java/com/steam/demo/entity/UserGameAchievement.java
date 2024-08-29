@@ -28,4 +28,7 @@ public class UserGameAchievement {
 
     @Column(name = "earned_at")
     private LocalDateTime earnedAt;
+
+    @Column(name = "avatar",nullable = false)
+    private String avatar;
 }

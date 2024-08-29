@@ -40,7 +40,7 @@ public class UserGames { //бібліотека юзера
     private LocalDateTime lastPlayed;
     @Column(name = "status")//in wish list\bought\gifted\owned
     private String status;
-    @Column(nullable = false)
+    @Column(name = "avatar",nullable = false)
     private String avatar;
 
     @ManyToMany(fetch = FetchType.LAZY)
