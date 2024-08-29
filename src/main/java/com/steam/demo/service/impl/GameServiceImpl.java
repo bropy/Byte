@@ -97,6 +97,7 @@ public class GameServiceImpl implements GameService {
                 .lastPlayed(userGames.getLastPlayed())
                 .status(userGames.getStatus())
                 .avatar(userGames.getAvatar())
+                .total(userGames.getTotal())
                 .achievements(achievementDtos)
                 .build();
     }

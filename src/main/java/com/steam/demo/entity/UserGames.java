@@ -42,6 +42,8 @@ public class UserGames { //бібліотека юзера
     private String status;
     @Column(name = "avatar",nullable = false)
     private String avatar;
+    @Column(name = "total",nullable = false)
+    private int total;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

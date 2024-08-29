@@ -31,4 +31,6 @@ public class UserGameAchievement {
 
     @Column(name = "avatar",nullable = false)
     private String avatar;
+    @Column(name = "total",nullable = false)
+    private int total;
 }
