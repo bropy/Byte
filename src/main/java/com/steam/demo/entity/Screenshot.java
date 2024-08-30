@@ -1,5 +1,6 @@
 package com.steam.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,8 +34,10 @@ public class Screenshot {
     @Column(nullable = false)
     private String source; // лінк на фото
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "profile_id", nullable = false)
     private Profile profile;
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id", nullable = false)
     private Game game;
