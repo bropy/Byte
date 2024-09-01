@@ -1,7 +1,9 @@
 package com.steam.demo.controllers;
 
+import com.steam.demo.entity.Comment;
 import com.steam.demo.entity.Profile;
 import com.steam.demo.entity.User;
+import com.steam.demo.service.CommentService;
 import com.steam.demo.service.ProfileService;
 
 import java.util.ArrayList;
@@ -19,6 +21,10 @@ import org.springframework.web.bind.annotation.*;
 public class ProfileController {
     @Autowired
     private ProfileService profileService;
+    @Autowired
+    private CommentService commentService;
+
+
 
     @GetMapping
     public List<Profile> getAllProfiles() {
@@ -31,6 +37,16 @@ public class ProfileController {
         return profile.map(ResponseEntity::ok).orElseGet(
             () -> ResponseEntity.notFound().build()
         );
+    }
+    @GetMapping("/comments/{id}")
+    public ResponseEntity<List<Comment>> getProfileComments(@PathVariable Long id) {
+        Optional<Profile> profile = profileService.getProfileById(id);
+        if (profile.isPresent()) {
+            List<Comment> comments = commentService.getCommentsByProfileReceiver(id);
+            return ResponseEntity.ok(comments);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package com.steam.demo.controllers;
 
+import com.steam.demo.dto.ScreenshotDto;
 import com.steam.demo.entity.CreativeWork;
 import com.steam.demo.entity.Profile;
 import com.steam.demo.entity.Review;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/media")
@@ -51,21 +53,55 @@ public class MediaController {
         return ResponseEntity.ok(mediaCounts);
     }
     @GetMapping("/screenshots/recent")
-    public ResponseEntity<List<Screenshot>> getRecentScreenshots(
+    public ResponseEntity<List<ScreenshotDto>> getRecentScreenshots(
             @RequestParam(defaultValue = "0") int start,
             @RequestParam(defaultValue = "20") int limit
     ) {
-        Page<Screenshot> recentScreenshots = screenshotRepository.findTopByOrderByDateDesc(PageRequest.of(start / limit, limit));
-        return ResponseEntity.ok(recentScreenshots.getContent());
+        System.out.println("Start: " + start);
+        System.out.println("Limit: " + limit);
+
+        int pageNumber = start;
+        System.out.println("Page Number: " + pageNumber);
+
+        PageRequest pageRequest = PageRequest.of(pageNumber, limit);
+        System.out.println("Page Request: " + pageRequest);
+
+        Page<Screenshot> recentScreenshots = screenshotRepository.findAllByOrderByDateDesc(pageRequest);
+        System.out.println("Recent Screenshots: " + recentScreenshots);
+
+        List<ScreenshotDto> screenshotDTOS = recentScreenshots.getContent().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(screenshotDTOS);
     }
 
     @GetMapping("/screenshots/popular")
-    public ResponseEntity<List<Screenshot>> getMostPopularScreenshots(
+    public ResponseEntity<List<ScreenshotDto>> getMostPopularScreenshots(
             @RequestParam(defaultValue = "0") int start,
             @RequestParam(defaultValue = "20") int limit
     ) {
-        Page<Screenshot> popularScreenshots = screenshotRepository.findTopByOrderByLikesDesc(PageRequest.of(start / limit, limit));
-        return ResponseEntity.ok(popularScreenshots.getContent());
+        int pageNumber = start / limit;
+        PageRequest pageRequest = PageRequest.of(pageNumber, limit);
+        Page<Screenshot> popularScreenshots = screenshotRepository.findAllByOrderByLikesDesc(pageRequest);
+        List<ScreenshotDto> screenshotDTOS = popularScreenshots.getContent().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(screenshotDTOS);
+    }
+
+    private ScreenshotDto convertToDTO(Screenshot screenshot) {
+        ScreenshotDto screenshotDTO = new ScreenshotDto();
+        screenshotDTO.setId(screenshot.getId());
+        screenshotDTO.setName(screenshot.getName());
+        screenshotDTO.setLikes(screenshot.getLikes());
+        screenshotDTO.setDislikes(screenshot.getDislikes());
+        screenshotDTO.setAward(screenshot.getAward());
+        screenshotDTO.setDate(screenshot.getDate());
+        screenshotDTO.setDescription(screenshot.getDescription());
+        screenshotDTO.setSource(screenshot.getSource());
+        screenshotDTO.setGameId(screenshot.getGame().getId());
+        screenshotDTO.setProfileId(screenshot.getProfile().getId());
+        return screenshotDTO;
     }
 
 }
