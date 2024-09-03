@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -16,9 +17,9 @@ public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
 
     @Override
-    public List<Comment> getCommentsByProfileReceiver(Long profileId) {
-        Profile profile = new Profile();
-        profile.setId(profileId);
+    public List<Comment> getCommentsByProfileReceiver(Optional<Profile> profile) {
+
         return commentRepository.findByProfileReceiver(profile);
     }
+
 }

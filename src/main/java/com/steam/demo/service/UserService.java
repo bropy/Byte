@@ -18,7 +18,7 @@ public interface UserService {
 
     Optional<User> getUserByLogin(String login);
 
-    User createUser(User user);
+    UserDto createUser(User user);
 
     User updateUser(Long id, User userDetails);
 

@@ -1,20 +1,22 @@
 package com.steam.demo.controllers;
 
+import com.steam.demo.data.CreateUserRequest;
 import com.steam.demo.dto.UserDto;
+import com.steam.demo.entity.Profile;
 import com.steam.demo.entity.User;
 import com.steam.demo.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
     private final UserService userService;
 
@@ -26,37 +28,31 @@ public class AuthController {
         return "index";
     }
 
-    @GetMapping("/reg")
-    public String showRegistrationForm(Model model){
-        UserDto userDto = new UserDto();
-        model.addAttribute("user", userDto);
-        return "reg";
-    }
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
+        try {
+            User newUser = new User();
+            newUser.setLogin(createUserRequest.getLogin());
+            newUser.setPassword(createUserRequest.getPassword());
+            newUser.setEmail(createUserRequest.getEmail());
+            newUser.setFirstName(createUserRequest.getFirstName());
+            newUser.setLastName(createUserRequest.getLastName());
+            newUser.setBirthDate(createUserRequest.getBirthDate());
 
-    @PostMapping("/reg/save")
-    public String registration(@Valid @ModelAttribute("user") UserDto userDto, BindingResult result, Model model, HttpServletResponse response){
-        User existingUser = userService.findByEmail(userDto.getEmail());
+            Profile newProfile = new Profile();
+            newProfile.setNickname(createUserRequest.getNickname());
+            newProfile.setAvatar(createUserRequest.getAvatar());
+            newProfile.setDescription(createUserRequest.getDescription());
+            newProfile.setCountry(createUserRequest.getCountry());
+            newProfile.setStatus(createUserRequest.getStatus());
 
-        if(existingUser != null && existingUser.getEmail() != null && !existingUser.getEmail().isEmpty()){
-            result.rejectValue("email", null, "There is already an account existed with this email");
+            newUser.setProfile(newProfile);
+            newProfile.setUser(newUser);
+
+            UserDto createdUser = userService.createUser(newUser);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error creating user: " + e.getMessage());
         }
-
-        if(result.hasErrors()){
-            model.addAttribute("user", userDto);
-            return "reg";
-        }
-
-        userService.saveUser(userDto);
-
-        Cookie userCookie = new Cookie("user", userDto.getEmail());
-        userCookie.setPath("/");
-        userCookie.setMaxAge(24 * 60 * 60); //1 день
-        response.addCookie(userCookie);
-
-        return "redirect:/index?success";
-    }
-    @GetMapping("/login")
-    public String login(){
-        return "login";
     }
 }

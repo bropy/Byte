@@ -42,7 +42,7 @@ public class ProfileController {
     public ResponseEntity<List<Comment>> getProfileComments(@PathVariable Long id) {
         Optional<Profile> profile = profileService.getProfileById(id);
         if (profile.isPresent()) {
-            List<Comment> comments = commentService.getCommentsByProfileReceiver(id);
+            List<Comment> comments = commentService.getCommentsByProfileReceiver(profile);
             return ResponseEntity.ok(comments);
         } else {
             return ResponseEntity.notFound().build();
