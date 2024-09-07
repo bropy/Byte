@@ -23,10 +23,6 @@ public class AuthController {
     public AuthController(UserService userService){
         this.userService = userService;
     }
-    @GetMapping("/")
-    public String index(){
-        return "index";
-    }
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
