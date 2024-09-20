@@ -1,18 +1,15 @@
 package com.steam.demo.controllers;
 
 import com.steam.demo.data.CreateUserRequest;
+import com.steam.demo.data.LoginRequest;
 import com.steam.demo.dto.UserDto;
 import com.steam.demo.entity.Profile;
 import com.steam.demo.entity.User;
 import com.steam.demo.service.UserService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -50,5 +47,30 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error creating user: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/login")//тут юзаємо сесії для авторизації
+    public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest, HttpSession session) {
+        try {
+            UserDto authenticatedUser = userService.authenticateUser(loginRequest.getLogin(), loginRequest.getPassword());
+            if (authenticatedUser != null) {
+                session.setAttribute("userId", authenticatedUser.getId());
+                String sessionToken = java.util.UUID.randomUUID().toString();
+                session.setAttribute("sessionToken", sessionToken);
+                return ResponseEntity.ok()
+                        .header("Set-Cookie", "sessionToken=" + sessionToken + "; HttpOnly; SameSite=Strict")
+                        .body(authenticatedUser);
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during login: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(HttpSession session) {
+        session.invalidate();
+        return ResponseEntity.ok().body("Logged out successfully");
     }
 }

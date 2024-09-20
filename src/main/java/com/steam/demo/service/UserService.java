@@ -29,4 +29,5 @@ public interface UserService {
     void addFriend(Long id, Long friendId);
 
     void removeFriend(Long id, Long friendId);
+    UserDto authenticateUser(String login, String password);
 }

@@ -148,4 +148,11 @@ public class UserServiceImpl implements UserService {
         userDto.setBirthDate(user.getBirthDate());
         return userDto;
     }
+    public UserDto authenticateUser(String login, String password) {
+        User user = userRepository.findByLogin(login);
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+            return convertToDto(user);
+        }
+        return null;
+    }
 }
