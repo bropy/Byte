@@ -30,4 +30,6 @@ public interface UserService {
 
     void removeFriend(Long id, Long friendId);
     UserDto authenticateUser(String login, String password);
+
+    UserDto getUserDtoById(Long userId);
 }

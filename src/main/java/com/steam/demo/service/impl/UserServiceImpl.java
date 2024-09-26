@@ -155,4 +155,11 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
+
+    @Override
+    public UserDto getUserDtoById(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        return userOptional.map(this::convertToDto).orElse(null);
+    }
+
 }
