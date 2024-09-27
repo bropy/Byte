@@ -14,7 +14,11 @@ public class CorsConfiguration {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000", "https://byteweb-9d67fdfd7b15.herokuapp.com","https://byteserver-b28593dfb543.herokuapp.com/")
+                        .allowedOrigins(
+                                "http://localhost:3000",
+                                "https://byteweb-9d67fdfd7b15.herokuapp.com",
+                                "https://byteserver-b28593dfb543.herokuapp.com"
+                        )
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("Authorization", "Content-Type")
                         .allowCredentials(true);
