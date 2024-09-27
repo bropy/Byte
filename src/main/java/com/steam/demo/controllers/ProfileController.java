@@ -2,29 +2,30 @@ package com.steam.demo.controllers;
 
 import com.steam.demo.entity.Comment;
 import com.steam.demo.entity.Profile;
-import com.steam.demo.entity.User;
 import com.steam.demo.service.CommentService;
 import com.steam.demo.service.ProfileService;
+import com.steam.demo.service.UserService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/profiles")
 public class ProfileController {
     @Autowired
     private ProfileService profileService;
+
     @Autowired
     private CommentService commentService;
 
-
+    @Autowired
+    private UserService userService; // Inject UserService for user validation
 
     @GetMapping
     public List<Profile> getAllProfiles() {
@@ -35,20 +36,20 @@ public class ProfileController {
     public ResponseEntity<Profile> getProfileById(@PathVariable Long id) {
         Optional<Profile> profile = profileService.getProfileById(id);
         return profile.map(ResponseEntity::ok).orElseGet(
-            () -> ResponseEntity.notFound().build()
+                () -> ResponseEntity.notFound().build()
         );
     }
+
     @GetMapping("/comments/{id}")
     public ResponseEntity<List<Comment>> getProfileComments(@PathVariable Long id) {
         Optional<Profile> profile = profileService.getProfileById(id);
         if (profile.isPresent()) {
-            List<Comment> comments = commentService.getCommentsByProfileReceiver(profile);
+            List<Comment> comments = commentService.getCommentsByProfileReceiver(Optional.of(profile.get()));
             return ResponseEntity.ok(comments);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
-
 
     @GetMapping("/search/{nickname}")
     public List<Profile> getProfilesByNickname(@PathVariable String nickname) {
@@ -61,13 +62,21 @@ public class ProfileController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Profile> updateProfile(@PathVariable Long id, @RequestBody Profile profileDetails) {
-        try {
+    public ResponseEntity<Profile> updateProfile(
+            @PathVariable Long id,
+            @RequestBody Profile profileDetails,
+            HttpServletRequest request
+    ) {
+        // Get the current user from the session
+        Long currentUserId = (Long) request.getSession().getAttribute("userId");
+        Optional<Profile> existingProfile = profileService.getProfileById(id);
+
+        // Check if the profile exists and belongs to the current user
+        if (existingProfile.isPresent() && existingProfile.get().getUser().getId().equals(currentUserId)) {
             Profile updatedProfile = profileService.updateProfile(id, profileDetails);
             return ResponseEntity.ok(updatedProfile);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
         }
+        return null;
     }
 
     @DeleteMapping("/{id}")
