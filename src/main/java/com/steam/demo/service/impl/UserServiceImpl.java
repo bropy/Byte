@@ -146,8 +146,17 @@ public class UserServiceImpl implements UserService {
         userDto.setFirstName(user.getFirstName());
         userDto.setLastName(user.getLastName());
         userDto.setBirthDate(user.getBirthDate());
+
+        // Add avatar from profile
+        if (user.getProfile() != null) {
+            userDto.setAvatar(user.getProfile().getAvatar());
+        } else {
+            userDto.setAvatar(null); // or some default avatar URL
+        }
+
         return userDto;
     }
+
     public UserDto authenticateUser(String login, String password) {
         User user = userRepository.findByLogin(login);
         if (user != null && passwordEncoder.matches(password, user.getPassword())) {
@@ -161,5 +170,6 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOptional = userRepository.findById(userId);
         return userOptional.map(this::convertToDto).orElse(null);
     }
+
 
 }
