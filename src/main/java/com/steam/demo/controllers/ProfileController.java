@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +27,7 @@ public class ProfileController {
     private CommentService commentService;
 
     @Autowired
-    private UserService userService; // Inject UserService for user validation
+    private UserService userService;
 
     @GetMapping
     public List<Profile> getAllProfiles() {
@@ -40,12 +42,34 @@ public class ProfileController {
         );
     }
 
-    @GetMapping("/comments/{id}")
+    @GetMapping("/{id}/comments")
     public ResponseEntity<List<Comment>> getProfileComments(@PathVariable Long id) {
         Optional<Profile> profile = profileService.getProfileById(id);
         if (profile.isPresent()) {
             List<Comment> comments = commentService.getCommentsByProfileReceiver(Optional.of(profile.get()));
             return ResponseEntity.ok(comments);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/{id}/comments")
+    public ResponseEntity<Comment> addCommentToProfile(
+            @PathVariable Long id,
+            @RequestBody Comment comment,
+            HttpServletRequest request
+    ) {
+        Long currentUserId = (Long) request.getSession().getAttribute("userId");
+        Optional<Profile> receiverProfile = profileService.getProfileById(id);
+        Optional<Profile> senderProfile = profileService.getProfileByUserId(currentUserId);
+
+        if (receiverProfile.isPresent() && senderProfile.isPresent()) {
+            comment.setProfileReceiver(receiverProfile.get());
+            comment.setProfileSender(senderProfile.get());
+            comment.setDate(Timestamp.from(Instant.now()));
+
+            Comment savedComment = commentService.saveComment(comment);
+            return ResponseEntity.ok(savedComment);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -67,16 +91,14 @@ public class ProfileController {
             @RequestBody Profile profileDetails,
             HttpServletRequest request
     ) {
-        // Get the current user from the session
         Long currentUserId = (Long) request.getSession().getAttribute("userId");
         Optional<Profile> existingProfile = profileService.getProfileById(id);
 
-        // Check if the profile exists and belongs to the current user
         if (existingProfile.isPresent() && existingProfile.get().getUser().getId().equals(currentUserId)) {
             Profile updatedProfile = profileService.updateProfile(id, profileDetails);
             return ResponseEntity.ok(updatedProfile);
         }
-        return null;
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @DeleteMapping("/{id}")

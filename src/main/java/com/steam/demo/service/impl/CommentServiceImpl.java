@@ -17,9 +17,32 @@ public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
 
     @Override
-    public List<Comment> getCommentsByProfileReceiver(Optional<Profile> profile) {
-
-        return commentRepository.findByProfileReceiver(profile);
+    public List<Comment> getCommentsByProfileReceiver(Profile profile) {
+        return commentRepository.findByProfileReceiver(Optional.ofNullable(profile));
     }
 
+    @Override
+    public List<Comment> getCommentsByProfileReceiver(Optional<Profile> profileId) {
+        return null;
+    }
+
+    @Override
+    public Comment saveComment(Comment comment) {
+        return commentRepository.save(comment);
+    }
+
+    @Override
+    public Optional<Comment> getCommentById(Long id) {
+        return commentRepository.findById(id);
+    }
+
+    @Override
+    public void deleteComment(Long id) {
+        commentRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Comment> getAllComments() {
+        return commentRepository.findAll();
+    }
 }
