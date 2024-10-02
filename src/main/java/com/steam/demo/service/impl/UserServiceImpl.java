@@ -1,5 +1,6 @@
 package com.steam.demo.service.impl;
 
+import com.steam.demo.dto.SafeUserDto;
 import com.steam.demo.dto.UserDto;
 import com.steam.demo.entity.Profile;
 import com.steam.demo.entity.Role;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -115,18 +117,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
     public void addFriend(Long id, Long friendId) {
-        User user = getUserById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-        User friend = getUserById(friendId).orElseThrow(() -> new RuntimeException("Friend not found with id: " + friendId));
+
+    }
+
+    @Transactional
+    public void addFriend(SafeUserDto id, SafeUserDto friendId) {
+        User user = getUserById(id.getId()).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        User friend = getUserById(friendId.getId()).orElseThrow(() -> new RuntimeException("Friend not found with id: " + friendId));
         user.getFriends().add(friend);
         userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public void removeFriend(Long id, Long friendId) {
-        User user = getUserById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    public void removeFriend(SafeUserDto id, Long friendId) {
+        User user = getUserById(id.getId()).orElseThrow(() -> new RuntimeException("User not found with id: " + id));
         User friend = getUserById(friendId).orElseThrow(() -> new RuntimeException("Friend not found with id: " + friendId));
         user.getFriends().remove(friend);
         userRepository.save(user);
@@ -169,6 +175,11 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserDtoById(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         return userOptional.map(this::convertToDto).orElse(null);
+    }
+
+    @Override
+    public Set<User> getUsersByIds(Set<SafeUserDto> developers) {
+        return null;
     }
 
 

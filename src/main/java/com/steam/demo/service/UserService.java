@@ -1,11 +1,13 @@
 package com.steam.demo.service;
 
 
+import com.steam.demo.dto.SafeUserDto;
 import com.steam.demo.dto.UserDto;
 import com.steam.demo.entity.User;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface UserService {
     void saveUser(UserDto userDto);
@@ -28,8 +30,10 @@ public interface UserService {
 
     void addFriend(Long id, Long friendId);
 
-    void removeFriend(Long id, Long friendId);
+    void removeFriend(SafeUserDto id, Long friendId);
     UserDto authenticateUser(String login, String password);
 
     UserDto getUserDtoById(Long userId);
+
+    Set<User> getUsersByIds(Set<SafeUserDto> developers);
 }

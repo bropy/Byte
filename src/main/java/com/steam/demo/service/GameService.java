@@ -15,4 +15,6 @@ public interface GameService {
     Page<Game> searchGames(String query, Pageable pageable);
 
     List<UserGameDto> getGamesByUserId(Long userId);
+
+    GameDto createGame(GameDto gameDto);
 }

@@ -24,8 +24,10 @@ public class Game {
 
     @Column(nullable = false)
     private String description;
+
     @Column(nullable = false)
     private String avatar;
+
     @Column(nullable = false)
     private String source;
 
@@ -38,15 +40,7 @@ public class Game {
     @Column(nullable = false)
     private boolean approved;
 
-    @ManyToMany
-    @JoinTable(
-            name = "game_developers",
-            joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "developer_id")
-    )
-    private Set<User> developers;
-
     @ManyToOne
-    @JoinColumn(name = "publisher_id")
-    private User publisher;
+    @JoinColumn(name = "developer_id", nullable = false)
+    private User developer; // Now handles both developer and publisher roles
 }
