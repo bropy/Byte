@@ -65,7 +65,7 @@ public class ProfileController {
 
         if (receiverProfile.isPresent() && senderProfile.isPresent()) {
             comment.setProfileReceiver(receiverProfile.get());
-            comment.setProfileSender(senderProfile.get());
+            comment.setProfileSender(senderProfile.get()); // Set the user who is leaving the comment
             comment.setDate(Timestamp.from(Instant.now()));
 
             Comment savedComment = commentService.saveComment(comment);
@@ -74,6 +74,7 @@ public class ProfileController {
             return ResponseEntity.notFound().build();
         }
     }
+
 
     @GetMapping("/search/{nickname}")
     public List<Profile> getProfilesByNickname(@PathVariable String nickname) {
