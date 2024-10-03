@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-
 public class Profile {
 
     @Id
@@ -32,6 +31,7 @@ public class Profile {
 
     @Column(nullable = true)
     private String description;
+
     @Column(nullable = true)
     private String country = "Planet Earth";
 
@@ -42,5 +42,14 @@ public class Profile {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @JsonIgnore
     private User user;
+
+    // This method ensures that the User ID and Profile ID are equal
+    public void setUser(User user) {
+        this.user = user;
+        if (user != null) {
+            this.id = user.getId(); // Ensure the Profile ID matches the User ID
+        }
+    }
 }
+
 

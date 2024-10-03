@@ -62,7 +62,7 @@ public class GameServiceImpl implements GameService {
         game.setApproved(gameDto.isApproved());
 
         // Set new fields
-        game.setType(gameDto.getType());
+        game.setTypeGame(gameDto.getType());
         game.setPlayers(gameDto.getPlayers());
         game.setDeviceSupport(gameDto.getDeviceSupport());
         game.setStatus(gameDto.getStatus());
@@ -114,7 +114,7 @@ public class GameServiceImpl implements GameService {
                 .achievements(game.getAchievements().stream()
                         .map(this::convertAchievementToDto)
                         .collect(Collectors.toList()))
-                .type(game.getType()) // New field
+                .type(game.getTypeGame()) // New field
                 .players(game.getPlayers()) // New field
                 .deviceSupport(game.getDeviceSupport()) // New field
                 .status(game.getStatus()) // New field

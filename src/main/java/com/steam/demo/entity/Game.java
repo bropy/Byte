@@ -54,8 +54,8 @@ public class Game {
     private List<Achievement> achievements; // List of achievements associated with the game
 
     // New fields
-    @Column(name = "type", nullable = false)
-    private String type; // e.g., Action, Adventure, etc.
+    @Column(name = "typeGame", nullable = false)
+    private String typeGame; // e.g., Action, Adventure, etc.
 
     @Column(name = "players", nullable = false)
     private String players; // e.g., Single Player, Multiplayer, etc.

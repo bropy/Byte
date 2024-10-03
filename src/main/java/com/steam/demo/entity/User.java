@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Set;
 @ToString(exclude = {"password", "friends"})
 public class User {
 
+    @jakarta.persistence.Id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -66,4 +68,6 @@ public class User {
     @ManyToMany(mappedBy = "friends")
     @JsonBackReference
     private Set<User> friendsOf; // To avoid cyclic references
+
+
 }

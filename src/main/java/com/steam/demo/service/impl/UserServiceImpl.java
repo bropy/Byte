@@ -37,7 +37,8 @@ public class UserServiceImpl implements UserService {
 
         Profile profile = user.getProfile();
         if (profile != null) {
-            profile.setUser(user);
+            profile.setUser(user); // Set user in profile
+            profile.setId(user.getId()); // Ensure profile ID matches user ID
         }
 
         Role role = roleRepository.findByName("ROLE_USER");
@@ -49,6 +50,7 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
         return convertToDto(savedUser);
     }
+
 
     @Override
     public void saveUser(UserDto userDto) {
@@ -86,20 +88,25 @@ public class UserServiceImpl implements UserService {
                     user.setFirstName(userDetails.getFirstName());
                     user.setLastName(userDetails.getLastName());
                     user.setBirthDate(userDetails.getBirthDate());
+
                     if (userDetails.getPassword() != null && !userDetails.getPassword().isEmpty()) {
                         user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
                     }
+
                     if (userDetails.getProfile() != null) {
                         user.getProfile().setNickname(userDetails.getProfile().getNickname());
                         user.getProfile().setAvatar(userDetails.getProfile().getAvatar());
                         user.getProfile().setDescription(userDetails.getProfile().getDescription());
                         user.getProfile().setCountry(userDetails.getProfile().getCountry());
                         user.getProfile().setStatus(userDetails.getProfile().getStatus());
+                        user.getProfile().setId(user.getId()); // Ensure profile ID matches user ID
                     }
+
                     return userRepository.save(user);
                 })
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
+
 
     @Override
     public void deleteUser(Long id) {
