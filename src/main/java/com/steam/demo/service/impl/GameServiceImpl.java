@@ -61,6 +61,12 @@ public class GameServiceImpl implements GameService {
         game.setPrice(gameDto.getPrice());
         game.setApproved(gameDto.isApproved());
 
+        // Set new fields
+        game.setType(gameDto.getType());
+        game.setPlayers(gameDto.getPlayers());
+        game.setDeviceSupport(gameDto.getDeviceSupport());
+        game.setStatus(gameDto.getStatus());
+
         // Find the developer (User) by ID
         User developer = userRepository.findById(gameDto.getDeveloper())
                 .orElseThrow(() -> new IllegalArgumentException("Developer not found with id: " + gameDto.getDeveloper()));
@@ -100,6 +106,7 @@ public class GameServiceImpl implements GameService {
                 .description(game.getDescription())
                 .avatar(game.getAvatar())
                 .source(game.getSource())
+                .genre(game.getGenre())
                 .releaseDate(LocalDate.from(game.getReleaseDate()))
                 .price(game.getPrice())
                 .approved(game.isApproved())
@@ -107,6 +114,10 @@ public class GameServiceImpl implements GameService {
                 .achievements(game.getAchievements().stream()
                         .map(this::convertAchievementToDto)
                         .collect(Collectors.toList()))
+                .type(game.getType()) // New field
+                .players(game.getPlayers()) // New field
+                .deviceSupport(game.getDeviceSupport()) // New field
+                .status(game.getStatus()) // New field
                 .build();
     }
 
