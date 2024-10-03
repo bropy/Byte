@@ -3,20 +3,17 @@ package com.steam.demo.controllers;
 import com.steam.demo.dto.GameDto;
 import com.steam.demo.dto.UserGameDto;
 import com.steam.demo.entity.Game;
-import com.steam.demo.entity.User;
-import com.steam.demo.repository.GameRepository;
 import com.steam.demo.service.GameService;
 import com.steam.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/games")
@@ -24,17 +21,17 @@ public class GameController {
 
     @Autowired
     private GameService gameService;
-    @Autowired
-    private GameRepository gameRepository;
 
     @Autowired
     private UserService userService;
+
     @GetMapping("/{id}")
     public ResponseEntity<GameDto> getGameById(@PathVariable Long id) {
         Optional<GameDto> gameDto = gameService.getGameById(id);
         return gameDto.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserGameDto>> getGamesByUserId(@PathVariable Long userId) {
         List<UserGameDto> userGameDtos = gameService.getGamesByUserId(userId);
@@ -51,10 +48,17 @@ public class GameController {
         return gameService.searchGames(query, pageable);
     }
 
-
     @PostMapping
     public ResponseEntity<GameDto> createGame(@RequestBody GameDto gameDto) {
-        GameDto createdGame = gameService.createGame(gameDto);
-        return ResponseEntity.ok(createdGame);
+        try {
+            GameDto createdGame = gameService.createGame(gameDto);
+            return new ResponseEntity<>(createdGame, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            // This will catch the exception thrown when the developer is not found
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            // This will catch any other unexpected exceptions
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
