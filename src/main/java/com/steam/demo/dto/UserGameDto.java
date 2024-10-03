@@ -10,6 +10,7 @@ import java.util.Set;
 @Builder
 public class UserGameDto {
     private Long gameId;
+    private Long userId;
     private String title;
     private String description;
     private float playtimeHours;

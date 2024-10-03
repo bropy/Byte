@@ -13,14 +13,15 @@ import com.steam.demo.repository.GameRepository;
 import com.steam.demo.repository.UserGamesRepository;
 import com.steam.demo.repository.UserRepository;
 import com.steam.demo.service.GameService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +38,7 @@ public class GameServiceImpl implements GameService {
 
     @Autowired
     private UserRepository userRepository;
+
     @Override
     public Page<Game> getAllGames(Pageable pageable) {
         return gameRepository.findAll(pageable);
@@ -47,10 +49,80 @@ public class GameServiceImpl implements GameService {
         return gameRepository.findByTitleContainingIgnoreCase(query, pageable);
     }
 
+    @Transactional
+    public GameDto createGame(GameDto gameDto) {
+        // Create a new Game entity
+        Game game = new Game();
+        game.setTitle(gameDto.getTitle());
+        game.setDescription(gameDto.getDescription());
+        game.setAvatar(gameDto.getAvatar());
+        game.setSource(gameDto.getSource());
+        game.setReleaseDate(gameDto.getReleaseDate().atStartOfDay());
+        game.setPrice(gameDto.getPrice());
+        game.setApproved(gameDto.isApproved());
+
+        // Find the developer (User) by ID
+        User developer = userRepository.findById(gameDto.getDeveloper())
+                .orElseThrow(() -> new IllegalArgumentException("Developer not found with id: " + gameDto.getDeveloper()));
+        game.setDeveloper(developer);
+
+        // Save the game entity
+        Game savedGame = gameRepository.save(game);
+
+        // If achievements exist in the GameDto, create and save them
+        if (gameDto.getAchievements() != null && !gameDto.getAchievements().isEmpty()) {
+            List<Achievement> achievements = gameDto.getAchievements().stream()
+                    .map(achievementDto -> createAchievement(achievementDto, savedGame))
+                    .collect(Collectors.toList());
+            achievementRepository.saveAll(achievements);
+            savedGame.setAchievements(achievements);
+        }
+
+        // Return the saved game as a GameDto
+        return convertToDto(savedGame);
+    }
+
+    // Create a new achievement for a game
+    private Achievement createAchievement(AchievementDto achievementDto, Game game) {
+        Achievement achievement = new Achievement();
+        achievement.setName(achievementDto.getName());
+        achievement.setInstruction(achievementDto.getInstruction());
+        achievement.setImage(achievementDto.getImage());
+        achievement.setGame(game);
+        return achievement;
+    }
+
+    // Convert Game entity to GameDto
+    private GameDto convertToDto(Game game) {
+        return GameDto.builder()
+                .id(game.getId())
+                .title(game.getTitle())
+                .description(game.getDescription())
+                .avatar(game.getAvatar())
+                .source(game.getSource())
+                .releaseDate(LocalDate.from(game.getReleaseDate()))
+                .price(game.getPrice())
+                .approved(game.isApproved())
+                .developer(game.getDeveloper().getId())
+                .achievements(game.getAchievements().stream()
+                        .map(this::convertAchievementToDto)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    // Convert Achievement entity to AchievementDto
+    private AchievementDto convertAchievementToDto(Achievement achievement) {
+        return AchievementDto.builder()
+                .id(achievement.getId())
+                .name(achievement.getName())
+                .instruction(achievement.getInstruction())
+                .image(achievement.getImage())
+                .build();
+    }
+
     @Override
     public Optional<GameDto> getGameById(Long id) {
-        Optional<Game> gameOptional = gameRepository.findById(id);
-        return gameOptional.map(this::convertToDto);
+        return gameRepository.findById(id).map(this::convertToDto);
     }
 
     @Override
@@ -61,80 +133,7 @@ public class GameServiceImpl implements GameService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public GameDto createGame(GameDto gameDto) {
-        // Конвертуємо GameDto в Game entity
-        Game game = new Game();
-        game.setTitle(gameDto.getTitle());
-        game.setDescription(gameDto.getDescription());
-        game.setSource(gameDto.getSource());
-        game.setReleaseDate(gameDto.getReleaseDate());
-        game.setPrice(gameDto.getPrice());
-        game.setApproved(gameDto.isApproved());
-
-        // Перевіряємо, чи є розробник в DTO, і отримуємо його з бази даних за ідентифікатором
-        if (gameDto.getDeveloper() != null) {
-            Optional<User> developerOptional = userRepository.findById(gameDto.getDeveloper());
-            if (developerOptional.isPresent()) {
-                game.setDeveloper(developerOptional.get()); // Встановлюємо знайденого розробника
-            } else {
-                throw new IllegalArgumentException("Developer not found with id: " + gameDto.getDeveloper());
-            }
-        }
-
-        // Зберігаємо гру
-        Game savedGame = gameRepository.save(game);
-
-        // Повертаємо збережену гру як DTO
-        return convertToDto(savedGame);
-    }
-
-    private GameDto convertToDto(Game game) {
-        // Get the developer's ID, or null if there's no developer
-        Long developerId = game.getDeveloper() != null ? game.getDeveloper().getId() : null;
-
-        // Побудова GameDto з відповідними полями
-        return GameDto.builder()
-                .id(game.getId())
-                .title(game.getTitle())
-                .description(game.getDescription())
-                .avatar(game.getAvatar())  // Assuming Game entity has an avatar field
-                .source(game.getSource())
-                .releaseDate(game.getReleaseDate())
-                .price(game.getPrice())
-                .approved(game.isApproved())
-                .developer(developerId)
-                .build();
-    }
-    private UserGameDto convertToUserGameDto(UserGames userGames) {
-        Game game = userGames.getGame();
-        Set<AchievementDto> achievementDtos = userGames.getAchievements().stream()
-                .map(this::convertAchievementToDto)
-                .collect(Collectors.toSet());
-
-        return UserGameDto.builder()
-                .gameId(game.getId())
-                .title(game.getTitle())
-                .description(game.getDescription())
-                .playtimeHours(userGames.getPlaytimeHours())
-                .lastPlayed(userGames.getLastPlayed())
-                .status(userGames.getStatus())
-                .avatar(userGames.getAvatar())
-                .total(userGames.getTotal())
-                .achievements(achievementDtos)
-                .build();
-    }
-
-    private AchievementDto convertAchievementToDto(Achievement achievement) {
-        return AchievementDto.builder()
-                .id(achievement.getId())
-                .name(achievement.getName())
-                .instruction(achievement.getInstruction())
-                .image(achievement.getImage())
-                .build();
-    }
-
-    // Конвертація SafeUserDto в User
+    // Convert SafeUserDto to User
     private User convertSafeDtoToUser(SafeUserDto userDto) {
         if (userDto == null) {
             return null;
@@ -150,7 +149,7 @@ public class GameServiceImpl implements GameService {
         return user;
     }
 
-    // Конвертація User в SafeUserDto
+    // Convert User entity to SafeUserDto
     private SafeUserDto convertUserToSafeDto(User user) {
         if (user == null) {
             return null;
@@ -163,6 +162,17 @@ public class GameServiceImpl implements GameService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .birthDate(user.getBirthDate())
+                .build();
+    }
+
+    // Convert UserGames entity to UserGameDto
+    private UserGameDto convertToUserGameDto(UserGames userGames) {
+        return UserGameDto.builder()
+                .gameId(userGames.getGame().getId())
+                .userId(userGames.getUser().getId())
+                .status(userGames.getStatus())
+                .playtimeHours(userGames.getPlaytimeHours())
+                .lastPlayed(userGames.getLastPlayed())
                 .build();
     }
 }

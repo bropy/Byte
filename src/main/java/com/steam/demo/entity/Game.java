@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -42,5 +43,9 @@ public class Game {
 
     @ManyToOne
     @JoinColumn(name = "developer_id", nullable = false)
-    private User developer; // Now handles both developer and publisher roles
+    private User developer; // Handles both developer and publisher roles
+
+    // One-to-many relationship with achievements
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Achievement> achievements; // List of achievements associated with the game
 }

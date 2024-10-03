@@ -50,15 +50,8 @@ public class GameController {
 
     @PostMapping
     public ResponseEntity<GameDto> createGame(@RequestBody GameDto gameDto) {
-        try {
-            GameDto createdGame = gameService.createGame(gameDto);
-            return new ResponseEntity<>(createdGame, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            // This will catch the exception thrown when the developer is not found
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            // This will catch any other unexpected exceptions
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        GameDto createdGame = gameService.createGame(gameDto);
+        return new ResponseEntity<>(createdGame, HttpStatus.CREATED);
     }
+
 }
