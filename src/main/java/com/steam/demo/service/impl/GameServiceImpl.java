@@ -62,20 +62,27 @@ public class GameServiceImpl implements GameService {
         game.setApproved(gameDto.isApproved());
 
         // Set new fields
-        game.setTypeGame(gameDto.getType());
+        game.setTypeGame(gameDto.getTypeGame());
+        game.setGenre(gameDto.getGenre());
         game.setPlayers(gameDto.getPlayers());
         game.setDeviceSupport(gameDto.getDeviceSupport());
         game.setStatus(gameDto.getStatus());
 
-        // Find the developer (User) by ID
-        User developer = userRepository.findById(gameDto.getDeveloper())
-                .orElseThrow(() -> new IllegalArgumentException("Developer not found with id: " + gameDto.getDeveloper()));
+        // Find the developer by login instead of id
+        Optional<User> developerOpt = Optional.ofNullable(userRepository.findByLogin(gameDto.getDeveloper()));
+
+        if (developerOpt.isEmpty()) {
+            // Log the error or throw a custom exception
+            throw new IllegalArgumentException("Developer with login: " + gameDto.getDeveloper() + " not found.");
+        }
+
+        User developer = developerOpt.get();
         game.setDeveloper(developer);
 
         // Save the game entity
         Game savedGame = gameRepository.save(game);
 
-        // If achievements exist in the GameDto, create and save them
+        // Handle achievements if present
         if (gameDto.getAchievements() != null && !gameDto.getAchievements().isEmpty()) {
             List<Achievement> achievements = gameDto.getAchievements().stream()
                     .map(achievementDto -> createAchievement(achievementDto, savedGame))
@@ -84,7 +91,6 @@ public class GameServiceImpl implements GameService {
             savedGame.setAchievements(achievements);
         }
 
-        // Return the saved game as a GameDto
         return convertToDto(savedGame);
     }
 
@@ -110,11 +116,11 @@ public class GameServiceImpl implements GameService {
                 .releaseDate(LocalDate.from(game.getReleaseDate()))
                 .price(game.getPrice())
                 .approved(game.isApproved())
-                .developer(game.getDeveloper().getId())
+                .developer(game.getDeveloper().getLogin())
                 .achievements(game.getAchievements().stream()
                         .map(this::convertAchievementToDto)
                         .collect(Collectors.toList()))
-                .type(game.getTypeGame()) // New field
+                .typeGame(game.getTypeGame()) // New field
                 .players(game.getPlayers()) // New field
                 .deviceSupport(game.getDeviceSupport()) // New field
                 .status(game.getStatus()) // New field

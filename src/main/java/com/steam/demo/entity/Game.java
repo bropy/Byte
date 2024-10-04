@@ -46,7 +46,7 @@ public class Game {
     private boolean approved;
 
     @ManyToOne
-    @JoinColumn(name = "developer_id", nullable = false)
+    @JoinColumn(name = "developer_login", nullable = false)
     private User developer; // Handles both developer and publisher roles
 
     // One-to-many relationship with achievements
@@ -54,7 +54,7 @@ public class Game {
     private List<Achievement> achievements; // List of achievements associated with the game
 
     // New fields
-    @Column(name = "typeGame", nullable = false)
+    @Column(name = "type_game", nullable = false)
     private String typeGame; // e.g., Action, Adventure, etc.
 
     @Column(name = "players", nullable = false)

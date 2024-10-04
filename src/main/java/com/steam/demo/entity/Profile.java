@@ -43,13 +43,13 @@ public class Profile {
     @JsonIgnore
     private User user;
 
-    // This method ensures that the User ID and Profile ID are equal
     public void setUser(User user) {
         this.user = user;
         if (user != null) {
-            this.id = user.getId(); // Ensure the Profile ID matches the User ID
+            this.id = user.getId(); // Synchronize Profile ID with User ID
         }
     }
+
 }
 
 

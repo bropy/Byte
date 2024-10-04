@@ -69,5 +69,4 @@ public class User {
     @JsonBackReference
     private Set<User> friendsOf; // To avoid cyclic references
 
-
 }
