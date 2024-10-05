@@ -19,7 +19,7 @@ public class CorsConfiguration {
                                 "https://byteweb-9d67fdfd7b15.herokuapp.com",
                                 "https://byteserver-b28593dfb543.herokuapp.com"
                         )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE","PATCH")
                         .allowedHeaders("Authorization", "Content-Type")
                         .allowCredentials(true);
             }
