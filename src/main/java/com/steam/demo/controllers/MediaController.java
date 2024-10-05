@@ -1,10 +1,7 @@
 package com.steam.demo.controllers;
 
 import com.steam.demo.dto.ScreenshotDto;
-import com.steam.demo.entity.CreativeWork;
-import com.steam.demo.entity.Profile;
-import com.steam.demo.entity.Review;
-import com.steam.demo.entity.Screenshot;
+import com.steam.demo.entity.*;
 import com.steam.demo.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,7 +17,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/media")
 public class MediaController {
-
     @Autowired
     private VideoRepository videoRepository;
     @Autowired
@@ -31,6 +27,10 @@ public class MediaController {
     private GuideRepository guideRepository;
     @Autowired
     private CreativeWorkRepository creativeWorkRepository;
+    @Autowired
+    private GameRepository gameRepository;
+    @Autowired
+    private ProfileRepository profileRepository;
 
 
     @GetMapping("/media-counter/{profileId}")
@@ -89,6 +89,47 @@ public class MediaController {
         return ResponseEntity.ok(screenshotDTOS);
     }
 
+    @PostMapping("/screenshots")
+    public ResponseEntity<ScreenshotDto> addScreenshot(@RequestBody ScreenshotDto screenshotDto) {
+        try {
+            // Convert DTO to entity
+            Screenshot screenshot = convertToEntity(screenshotDto);
+
+            // Save screenshot entity
+            Screenshot savedScreenshot = screenshotRepository.save(screenshot);
+
+            // Convert saved entity back to DTO
+            ScreenshotDto savedScreenshotDto = convertToDTO(savedScreenshot);
+
+            return ResponseEntity.ok(savedScreenshotDto);
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(null); // Bad Request in case of an error
+        }
+    }
+
+    private Screenshot convertToEntity(ScreenshotDto screenshotDto) {
+        Screenshot screenshot = new Screenshot();
+        screenshot.setName(screenshotDto.getName());
+        screenshot.setLikes(screenshotDto.getLikes());
+        screenshot.setDislikes(screenshotDto.getDislikes());
+        screenshot.setAward(screenshotDto.getAward());
+        screenshot.setDate(screenshotDto.getDate());
+        screenshot.setDescription(screenshotDto.getDescription());
+        screenshot.setSource(screenshotDto.getSource());
+
+        // Fetch related entities
+        Profile profile = profileRepository.findById(screenshotDto.getProfileId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid profile ID"));
+        Game game = gameRepository.findById(screenshotDto.getGameId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid game ID"));
+
+        // Set profile and game in the screenshot entity
+        screenshot.setProfile(profile);
+        screenshot.setGame(game);
+
+        return screenshot;
+    }
+
     private ScreenshotDto convertToDTO(Screenshot screenshot) {
         ScreenshotDto screenshotDTO = new ScreenshotDto();
         screenshotDTO.setId(screenshot.getId());
@@ -103,5 +144,4 @@ public class MediaController {
         screenshotDTO.setProfileId(screenshot.getProfile().getId());
         return screenshotDTO;
     }
-
 }
