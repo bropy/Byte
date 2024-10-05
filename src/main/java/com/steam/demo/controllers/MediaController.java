@@ -74,6 +74,44 @@ public class MediaController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(screenshotDTOS);
     }
+    @PatchMapping("/screenshots/{id}/like")
+    public ResponseEntity<ScreenshotDto> updateLikes(@PathVariable Long id) {
+        Screenshot screenshot = screenshotRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Screenshot not found"));
+
+        // Increment the likes count
+        screenshot.setLikes(screenshot.getLikes() + 1);
+        Screenshot updatedScreenshot = screenshotRepository.save(screenshot);
+
+        // Return the updated Screenshot as a DTO
+        return ResponseEntity.ok(convertToDTO(updatedScreenshot));
+    }
+
+    @PatchMapping("/screenshots/{id}/dislike")
+    public ResponseEntity<ScreenshotDto> updateDislikes(@PathVariable Long id) {
+        Screenshot screenshot = screenshotRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Screenshot not found"));
+
+        // Increment the dislikes count
+        screenshot.setDislikes(screenshot.getDislikes() + 1);
+        Screenshot updatedScreenshot = screenshotRepository.save(screenshot);
+
+        // Return the updated Screenshot as a DTO
+        return ResponseEntity.ok(convertToDTO(updatedScreenshot));
+    }
+
+    @PatchMapping("/screenshots/{id}/award")
+    public ResponseEntity<ScreenshotDto> updateAwards(@PathVariable Long id) {
+        Screenshot screenshot = screenshotRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Screenshot not found"));
+
+        // Increment the awards count
+        screenshot.setAward(screenshot.getAward() + 1);
+        Screenshot updatedScreenshot = screenshotRepository.save(screenshot);
+
+        // Return the updated Screenshot as a DTO
+        return ResponseEntity.ok(convertToDTO(updatedScreenshot));
+    }
 
     @GetMapping("/screenshots/popular")
     public ResponseEntity<List<ScreenshotDto>> getMostPopularScreenshots(
