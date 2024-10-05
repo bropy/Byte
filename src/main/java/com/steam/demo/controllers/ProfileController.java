@@ -96,11 +96,31 @@ public class ProfileController {
         Optional<Profile> existingProfile = profileService.getProfileById(id);
 
         if (existingProfile.isPresent() && existingProfile.get().getUser().getId().equals(currentUserId)) {
-            Profile updatedProfile = profileService.updateProfile(id, profileDetails);
+            Profile updatedProfile = existingProfile.get();
+
+            // Update fields only if they are present in the request body
+            if (profileDetails.getNickname() != null && !profileDetails.getNickname().isEmpty()) {
+                updatedProfile.setNickname(profileDetails.getNickname());
+            }
+            if (profileDetails.getAvatar() != null && !profileDetails.getAvatar().isEmpty()) {
+                updatedProfile.setAvatar(profileDetails.getAvatar());
+            }
+            if (profileDetails.getDescription() != null && !profileDetails.getDescription().isEmpty()) {
+                updatedProfile.setDescription(profileDetails.getDescription());
+            }
+            if (profileDetails.getCountry() != null && !profileDetails.getCountry().isEmpty()) {
+                updatedProfile.setCountry(profileDetails.getCountry());
+            }
+            if (profileDetails.getStatus() != null && !profileDetails.getStatus().isEmpty()) {
+                updatedProfile.setStatus(profileDetails.getStatus());
+            }
+
+            updatedProfile = profileService.updateProfile(id, updatedProfile);
             return ResponseEntity.ok(updatedProfile);
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProfile(@PathVariable Long id) {
