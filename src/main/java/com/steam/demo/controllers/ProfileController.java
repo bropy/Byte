@@ -89,37 +89,33 @@ public class ProfileController {
     @PutMapping("/{id}")
     public ResponseEntity<Profile> updateProfile(
             @PathVariable Long id,
-            @RequestBody Profile profileDetails,
-            HttpServletRequest request
+            @RequestBody Profile profileDetails
     ) {
-        Long currentUserId = (Long) request.getSession().getAttribute("userId");
         Optional<Profile> existingProfile = profileService.getProfileById(id);
 
-        if (existingProfile.isPresent() && existingProfile.get().getUser().getId().equals(currentUserId)) {
+        if (existingProfile.isPresent()) {
             Profile updatedProfile = existingProfile.get();
 
-            // Update fields only if they are present in the request body
-            if (profileDetails.getNickname() != null && !profileDetails.getNickname().isEmpty()) {
-                updatedProfile.setNickname(profileDetails.getNickname());
-            }
-            if (profileDetails.getAvatar() != null && !profileDetails.getAvatar().isEmpty()) {
+            // Update the profile fields only if they are not empty
+            if (profileDetails.getAvatar() != null) {
                 updatedProfile.setAvatar(profileDetails.getAvatar());
             }
-            if (profileDetails.getDescription() != null && !profileDetails.getDescription().isEmpty()) {
+            if (profileDetails.getDescription() != null) {
                 updatedProfile.setDescription(profileDetails.getDescription());
             }
-            if (profileDetails.getCountry() != null && !profileDetails.getCountry().isEmpty()) {
+            if (profileDetails.getCountry() != null) {
                 updatedProfile.setCountry(profileDetails.getCountry());
             }
-            if (profileDetails.getStatus() != null && !profileDetails.getStatus().isEmpty()) {
+            if (profileDetails.getStatus() != null) {
                 updatedProfile.setStatus(profileDetails.getStatus());
             }
 
             updatedProfile = profileService.updateProfile(id, updatedProfile);
             return ResponseEntity.ok(updatedProfile);
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        return ResponseEntity.notFound().build();
     }
+
 
 
     @DeleteMapping("/{id}")
